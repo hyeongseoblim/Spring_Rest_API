@@ -7,15 +7,15 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.net.URI;
 
-import static org.springframework.hateoas.server.mvc.ControllerLinkBuilder.linkTo;
-import static org.springframework.hateoas.server.mvc.ControllerLinkBuilder.methodOn;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 
 @RestController
 public class EventController {
     @PostMapping("/api/event/")
     public ResponseEntity createEvent() {
-        URI createURI = linkTo(methodOn(EventController.class).createEvent()).slash("{id}").toUri();
-        return ResponseEntity.created(createURI).build();
+        URI createUri = linkTo(methodOn(EventController.class).createEvent()).slash("{id}").toUri();
+        return ResponseEntity.created(createUri).build();
     }
 }
