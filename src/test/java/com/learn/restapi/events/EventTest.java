@@ -1,4 +1,4 @@
-package events;
+package com.learn.restapi.events;
 
 import org.junit.jupiter.api.Test;
 
