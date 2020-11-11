@@ -15,9 +15,11 @@ public class EventTest {
     public void javaBean(){
         Event event = new Event();
         String name = "Event";
-        event.setName(name);
         String hihi = "hihi";
+        //set
+        event.setName(name);
         event.setDescription(hihi);
+        //then
         assertThat(event.getName()).isEqualTo(name);
         assertThat(event.getDescription()).isEqualTo(hihi);
     }
