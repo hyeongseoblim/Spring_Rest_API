@@ -9,7 +9,9 @@ import java.time.LocalDateTime;
 
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor
 @Builder @EqualsAndHashCode(of ="id")
+@Entity
 public class Event {
+    
     @Id @GeneratedValue
     private Integer id;
     private String name;
@@ -24,6 +26,7 @@ public class Event {
     private int limitOfEnrollment;
     private boolean offline;
     private boolean free;
+    @Enumerated(EnumType.STRING)//enum type mapping
     private EventStatus eventStatus;
 
 }
