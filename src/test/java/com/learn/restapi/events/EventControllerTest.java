@@ -76,10 +76,9 @@ public class EventControllerTest {
                 .maxPrice(200)
                 .location("GangNam")
                 .free(true)
-                .offline(false)
+                .offline(false)// 받을수 없는 애들을 받을 경우 fail을 반환하게 함.
                 .build();
 
-        Mockito.when(eventRepository.save(event)).thenReturn(event);
 
         mockMvc.perform(post("/api")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -88,4 +87,5 @@ public class EventControllerTest {
                 .andDo(print())
                 .andExpect(status().isBadRequest());
     }
+
 }
