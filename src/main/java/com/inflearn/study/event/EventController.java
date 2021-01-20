@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.math.BigInteger;
 import java.net.URI;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
@@ -23,7 +24,12 @@ public class EventController {
 
     @PostMapping("/events")
     public ResponseEntity createEvent(@RequestBody Event event){
-        URI createURI = linkTo(methodOn(EventController.class).createEvent(event)).slash(event.getId()).toUri();
+        URI createURI = linkTo(methodOn(EventController.class).
+                createEvent(event)).
+                slash(event.getId()).
+                toUri();
+
+
         return ResponseEntity.created(createURI).build();
     }
 
