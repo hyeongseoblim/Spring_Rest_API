@@ -5,16 +5,13 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.time.LocalDateTime;
 
-import static org.junit.Assert.*;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -33,6 +30,7 @@ public class EventControllerTest {
     @Test
     public void createEvent() throws Exception {
         Event event = Event.builder().name("Spring")
+                .id(1)
                 .description("REST API DEVELOPMENT WITH SPRING")
                 .beginEnrollmentDateTime(LocalDateTime.of(2021, 1, 15, 2, 11))
                 .endEnrollmentDateTime(LocalDateTime.of(2021, 1, 16, 2, 11))
@@ -43,6 +41,7 @@ public class EventControllerTest {
                 .limitOfEnrollment(100)
                 .location("능곡")
                 .build();
+
         mockMvc.perform(post("/api/events")
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaTypes.HAL_JSON)

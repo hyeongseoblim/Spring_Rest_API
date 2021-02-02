@@ -17,20 +17,16 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
-@RequestMapping(value ="/api",produces = MediaTypes.HAL_JSON_VALUE)
+@RequestMapping(value ="/api/events",produces = MediaTypes.HAL_JSON_VALUE)
 public class EventController {
 
     private static  EventRepository eventRepository;
 
-    @PostMapping("/events")
+    @PostMapping
     public ResponseEntity createEvent(@RequestBody Event event){
-        URI createURI = linkTo(methodOn(EventController.class).
-                createEvent(event)).
-                slash(event.getId()).
-                toUri();
-
-
-        return ResponseEntity.created(createURI).build();
+        URI createURI = linkTo(EventController.class).slash("{id}").toUri();
+        event.setId(10);
+        return ResponseEntity.created(createURI).body(event);
     }
 
 }
