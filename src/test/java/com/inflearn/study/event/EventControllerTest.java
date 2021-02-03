@@ -1,12 +1,14 @@
 package com.inflearn.study.event;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.HttpHeaders;
@@ -21,7 +23,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @RunWith(SpringRunner.class)
-@WebMvcTest
+@SpringBootTest
+@AutoConfigureMockMvc
 public class EventControllerTest {
 
     @Autowired
@@ -30,13 +33,9 @@ public class EventControllerTest {
     @Autowired
     ObjectMapper objectMapper;// 객체를 JSON으로 변환하기 위한
 
-    @MockBean
-    EventRepository eventRepository;
-
     @Test
     public void createEvent() throws Exception {
         Event event = Event.builder().name("Spring")
-                .id(1)
                 .description("REST API DEVELOPMENT WITH SPRING")
                 .beginEnrollmentDateTime(LocalDateTime.of(2021, 1, 15, 2, 11))
                 .endEnrollmentDateTime(LocalDateTime.of(2021, 1, 16, 2, 11))
@@ -47,8 +46,6 @@ public class EventControllerTest {
                 .limitOfEnrollment(100)
                 .location("능곡")
                 .build();
-        event.setId(10);
-        Mockito.when(eventRepository.save(event)).thenReturn(event);
 
         mockMvc.perform(post("/api/events")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -58,7 +55,8 @@ public class EventControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("id").exists())
                 .andExpect(header().exists(HttpHeaders.LOCATION))
-                .andExpect(header().string(HttpHeaders.CONTENT_TYPE,MediaTypes.HAL_JSON_VALUE));
+                .andExpect(header().string(HttpHeaders.CONTENT_TYPE,MediaTypes.HAL_JSON_VALUE))
+                .andExpect(jsonPath("free").value(Matchers.not(true)));
     }
 
 }
