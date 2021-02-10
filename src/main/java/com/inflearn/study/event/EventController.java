@@ -3,6 +3,7 @@ package com.inflearn.study.event;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.hateoas.MediaTypes;
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -42,9 +43,14 @@ public class EventController {
             return ResponseEntity.badRequest().body(errors);
         }
         Event event = modelMapper.map(eventDto,Event.class);
+        event.update();
         Event newEvent = this.eventRepository.save(event);
-        URI createURI = linkTo(EventController.class).slash(newEvent.getId()).toUri();
-        return ResponseEntity.created(createURI).body(event);
+        WebMvcLinkBuilder selfLinkBuilder = linkTo(EventController.class).slash(newEvent.getId());
+        URI createURI = selfLinkBuilder.toUri();
+        EventResource eventResource = new EventResource(event);
+        eventResource.add(linkTo(EventController.class).withRel("query-event"));
+        eventResource.add(selfLinkBuilder.withRel("update-event"));
+        return ResponseEntity.created(createURI).body(eventResource);
     }
 
 }
