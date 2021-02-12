@@ -24,6 +24,7 @@ public class Event extends RepresentationModel<Event> {
     private int limitOfEnrollment;
     private boolean offline;
     private boolean free;
+
     @Enumerated(EnumType.STRING)
     private EventStatus eventStatus = EventStatus.DRAFT;
 

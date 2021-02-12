@@ -9,7 +9,7 @@ import org.springframework.hateoas.RepresentationModel;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
-//BeanSerializer 사
+//BeanSerializer
 @Getter@Setter
 public class EventResource extends EntityModel<Event> {
 
