@@ -236,12 +236,103 @@ public class EventControllerTest {
         ;
     }
 
-    private void generateEvent(int index) {
+    @Test
+    @TestDescription("1개의 이벤트 조회 하기")
+    public void getEvent() throws Exception {
+        //given
+        Event event = this.generateEvent(10);
+
+        // When & Then
+        this.mockMvc.perform(get("/api/events/{id}", event.getId()))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("id").exists())
+                .andExpect(jsonPath("name").exists())
+                .andExpect(jsonPath("_links.self").exists())
+                .andExpect(jsonPath("_links.profile").exists())
+                .andDo(document("get-an-event"))
+        ;
+    }
+
+    @Test
+    @TestDescription("없는 이벤트 조회 하기 404 이벤트")
+    public void getNullEvent() throws Exception {
+        //given
+
+        // When & Then
+        this.mockMvc.perform(get("/api/events/11123"))
+                .andDo(print())
+                .andExpect(status().isNotFound())
+        ;
+    }
+
+    private Event generateEvent(int index) {
         Event event = Event.builder()
                 .name("Event" + index)
                 .description("test Event")
                 .build();
 
         this.eventRepository.save(event);
+        return event;
     }
+
+    @Test
+    @TestDescription("정상적으로 이벤트를 수정하기")
+    public void updateEvent() throws Exception {
+        Event event = generateEvent(1);
+
+        event.setBasePrice(100);
+        event.setMaxPrice(200);
+        event.setBeginEnrollmentDateTime(LocalDateTime.now());
+        event.setBeginEventDateTime(LocalDateTime.now());
+        event.setEndEnrollmentDateTime(LocalDateTime.of(2021, 2, 13, 18, 0));
+        event.setEndEventDateTime(LocalDateTime.of(2021, 2, 17, 18, 0));
+        event.setLimitOfEnrollment(50);
+
+        this.mockMvc.perform(put("/api/events/")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaTypes.HAL_JSON)
+                .content(objectMapper.writeValueAsString(event)))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("id").exists())
+                .andExpect(jsonPath("basePrice").exists())
+                .andExpect(jsonPath("_links.self").exists())
+                .andExpect(jsonPath("_links.profile").exists())
+                .andDo(document("update an event"));
+        ;
+    }
+
+    @Test
+    @TestDescription("수정하려는 이벤트가 없는 경우")
+    public void updateNullEvent() throws Exception {
+        Event event = this.generateEvent(10);
+        this.mockMvc.perform(put("/api/events"))
+                .andDo(print())
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @TestDescription("수정하려는 이벤트의 입력데이터가 이상한 경우")
+    public void updateWrongEvent() throws Exception {
+        Event event = this.generateEvent(3);
+        this.mockMvc.perform(put("/api/events")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaTypes.HAL_JSON)
+                .content(objectMapper.writeValueAsString(event)))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("errors[0].objectName").exists())
+                .andExpect(jsonPath("errors[0].field").exists())
+                .andExpect(jsonPath("errors[0].code").exists())
+                .andExpect(jsonPath("errors[0].field").exists())
+                .andExpect(jsonPath("_links.index").exists());
+    }
+
+    @Test
+    @TestDescription("로직 오류로 수정 오류")
+    public void updateWrongLogicEvent() throws Exception {
+
+    }
+
 }

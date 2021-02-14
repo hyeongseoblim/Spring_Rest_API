@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.net.URI;
+import java.util.Optional;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
@@ -58,11 +59,46 @@ public class EventController {
     }
 
     @GetMapping
-    public ResponseEntity queryEvents(Pageable pageable, PagedResourcesAssembler<Event> assembler){
+    public ResponseEntity queryEvents(Pageable pageable, PagedResourcesAssembler<Event> assembler) {
         Page<Event> page = this.eventRepository.findAll(pageable);
-        var pageResources = assembler.toModel(page, e-> new EventResource(e));
+        var pageResources = assembler.toModel(page, e -> new EventResource(e));
         pageResources.add(new Link("/docs/index.html#resources-events-list").withRel("profile"));
         return ResponseEntity.ok(pageResources);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity getEvent(@PathVariable Integer id) {
+        Optional<Event> optionalEvent = this.eventRepository.findById(id);
+        if (optionalEvent.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        Event event = optionalEvent.get();
+        EventResource eventResource = new EventResource(event);
+        eventResource.add(new Link("/docs/index.html#resources-events-get").withRel("profile"));
+
+        return ResponseEntity.ok(eventResource);
+    }
+
+    @PutMapping
+    public ResponseEntity updateEvent(@RequestBody @Valid Event updateEvent, Errors errors) {
+        if (errors.hasErrors())
+            return badRequest(errors);
+        int id = updateEvent.getId();
+        Optional<Event> optionalEvent = this.eventRepository.findById(id);
+        if (optionalEvent.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        } else {
+            Event beforeEvent = optionalEvent.get();
+            beforeEvent = updateEvent;
+            eventValidator.validateUpdate(beforeEvent, errors);
+            if (errors.hasErrors())
+                return badRequest(errors);
+            beforeEvent.update();
+            this.eventRepository.save(beforeEvent);
+            EventResource eventResource = new EventResource(beforeEvent);
+            eventResource.add(new Link("/docs/index.html#resources-events-update").withRel("profile"));
+            return ResponseEntity.ok(eventResource);
+        }
     }
 
     private ResponseEntity badRequest(Errors errors) {
