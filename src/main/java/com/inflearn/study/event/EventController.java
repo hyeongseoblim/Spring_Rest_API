@@ -79,20 +79,20 @@ public class EventController {
         return ResponseEntity.ok(eventResource);
     }
 
-    @PutMapping
-    public ResponseEntity updateEvent(@RequestBody @Valid Event updateEvent, Errors errors) {
+    @PutMapping("/{id}")
+    public ResponseEntity updateEvent(@PathVariable Integer id,
+            @RequestBody @Valid EventDto updateEvent, Errors errors) {
         if (errors.hasErrors())
             return badRequest(errors);
-        int id = updateEvent.getId();
         Optional<Event> optionalEvent = this.eventRepository.findById(id);
         if (optionalEvent.isEmpty()) {
             return ResponseEntity.notFound().build();
         } else {
             Event beforeEvent = optionalEvent.get();
-            beforeEvent = updateEvent;
-            eventValidator.validateUpdate(beforeEvent, errors);
+            eventValidator.validate(updateEvent,errors);
             if (errors.hasErrors())
                 return badRequest(errors);
+            this.modelMapper.map(updateEvent,beforeEvent);
             beforeEvent.update();
             this.eventRepository.save(beforeEvent);
             EventResource eventResource = new EventResource(beforeEvent);

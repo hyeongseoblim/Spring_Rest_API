@@ -23,21 +23,4 @@ public class EventValidator {
         }
     }
 
-    public void validateUpdate(Event event, Errors errors) {
-        if (event.getMaxPrice() < event.getBasePrice() && event.getMaxPrice() > 0) {
-            errors.rejectValue("basePrice", "wrongValue", "basePrice is wrong");
-            errors.rejectValue("maxPrice", "wrongValue", "maxPrice is wrong");
-            errors.reject("wrongPrices", "Values to prices are Wrong ");
-        }
-        LocalDateTime endEventDateTime = event.getEndEventDateTime();
-        if (endEventDateTime != null) {
-            if (endEventDateTime.isBefore(event.getBeginEventDateTime()) ||
-                    endEventDateTime.isBefore(event.getBeginEnrollmentDateTime()) ||
-                    endEventDateTime.isBefore(event.getEndEnrollmentDateTime())) {
-                errors.rejectValue("endEventDateTime", "wrongValue", "endEventDateTime is wrong");
-            }
-        }else{
-            errors.rejectValue("endEventDateTime","nullvalue","endEvnetDatetime is null");
-        }
-    }
 }
