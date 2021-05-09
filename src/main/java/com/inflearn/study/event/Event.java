@@ -1,5 +1,6 @@
 package com.inflearn.study.event;
 
+import com.inflearn.study.account.Account;
 import lombok.*;
 import org.springframework.hateoas.RepresentationModel;
 
@@ -24,6 +25,9 @@ public class Event extends RepresentationModel<Event> {
     private int limitOfEnrollment;
     private boolean offline;
     private boolean free;
+
+    @ManyToOne
+    private Account manager;
 
     @Enumerated(EnumType.STRING)
     private EventStatus eventStatus = EventStatus.DRAFT;
